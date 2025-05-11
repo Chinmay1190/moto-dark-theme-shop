@@ -2,6 +2,7 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
 import { Product } from '@/types/product';
+import { motion } from 'framer-motion';
 
 interface ProductGridProps {
   products: Product[];
@@ -14,12 +15,44 @@ export function ProductGrid({ products, columns = 4 }: ProductGridProps) {
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
     4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
   };
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20
+      }
+    }
+  };
   
   return (
-    <div className={`grid ${gridClasses[columns]} gap-6`}>
+    <motion.div 
+      className={`grid ${gridClasses[columns]} gap-6`}
+      variants={container}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.1 }}
+    >
       {products.map(product => (
-        <ProductCard key={product.id} product={product} />
+        <motion.div key={product.id} variants={item} className="h-full">
+          <ProductCard product={product} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
